@@ -18,6 +18,8 @@
       </article>
     </div>
 
+    <p v-for="note in mergeNotes" :key="note" class="merge-note">{{ note }}</p>
+
     <p class="status-legend">
       <span v-for="item in statusSummary" :key="item.status" class="legend-item">
         {{ item.status }}：{{ item.count }}
@@ -38,6 +40,8 @@
         <tr>
           <th v-for="column in columns" :key="column">{{ column }}</th>
           <th>当前状态</th>
+          <th>保养判定</th>
+          <th>判定说明</th>
           <th>可执行动作</th>
         </tr>
       </thead>
@@ -45,6 +49,8 @@
         <tr v-for="row in rows" :key="String(row.id)">
           <td v-for="column in columns" :key="column">{{ row[column] ?? '—' }}</td>
           <td>{{ row.status }}</td>
+          <td>{{ verdictOf(row).level }}</td>
+          <td class="verdict-basis">{{ verdictOf(row).hint || verdictOf(row).basis }}</td>
           <td class="row-actions">
             <button
               v-for="action in actions"
@@ -58,7 +64,7 @@
           </td>
         </tr>
         <tr v-if="!rows.length">
-          <td :colspan="columns.length + 2" class="empty-state">暂无设备台账管理数据，可先登记管廊设备</td>
+          <td :colspan="columns.length + 4" class="empty-state">暂无设备台账管理数据，可先登记管廊设备</td>
         </tr>
       </tbody>
     </table>
@@ -79,19 +85,51 @@ import {
   moduleMeta,
   runAction as applyAction,
 } from '@/api/local-service'
+import { judgeDeviceMaintenance } from '@/data/maintenance-rule'
+import type { MaintenanceVerdict } from '@/data/maintenance-rule'
 import type { EntryRow } from '@/data/types'
 
 const meta = moduleMeta('device')
 const columns = ["设备编号", "设备名称", "设备型号", "所属舱室", "投运日期", "保养周期", "上次保养日", "设备状态"]
 const actions = ["登记运行", "完成保养", "报废设备"]
 const statuses = ["待保养", "运行中", "已保养", "已报废"]
-const stats = [{"label": "运行中设备", "value": 0}, {"label": "待保养设备", "value": 0}, {"label": "已报废设备", "value": 0}]
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
 const errorMessage = ref('')
 const filters = ref<Record<string, string>>({})
 const filterFields = columns.slice(0, 3)
+
+// 判定结论全页面只认一份：与保养动作回写、另存导出用的是同一个函数
+const verdicts = computed(() => {
+  const map = new Map<number, MaintenanceVerdict>()
+  for (const row of rows.value) {
+    map.set(Number(row.id), judgeDeviceMaintenance(row))
+  }
+  return map
+})
+
+function verdictOf(row: EntryRow): MaintenanceVerdict {
+  return verdicts.value.get(Number(row.id)) ?? judgeDeviceMaintenance(row)
+}
+
+// 统计卡片与清单取同一份数据、同一份判定，两边不会再对不上
+const stats = computed(() => {
+  const levels = rows.value.map((row) => verdictOf(row).level)
+  return [
+    { label: '运行中设备', value: levels.filter((level) => level === '正常').length },
+    { label: '待保养设备', value: levels.filter((level) => level === '待保养').length },
+    { label: '已报废设备', value: levels.filter((level) => level === '已报废').length },
+  ]
+})
+
+// 设备编号撞车合并的缘由，初始化清洗时写在行上，这里逐条亮出来
+const mergeNotes = computed(() =>
+  rows.value
+    .map((row) => String(row['合并缘由'] ?? ''))
+    .filter((note) => note !== ''),
+)
+
 const statusSummary = computed(() =>
   statuses.map((status: string) => ({
     status,

@@ -85,13 +85,28 @@ const meta = moduleMeta('maintenance')
 const columns = ["检修编号", "检修对象", "检修类别", "检修班组", "计划工期", "完工日期", "更换部件", "检修状态"]
 const actions = ["提交开工", "确认完工", "申请延期"]
 const statuses = ["待开工", "检修中", "已完工", "已延期"]
-const stats = [{"label": "待开工检修", "value": 0}, {"label": "检修中记录", "value": 0}, {"label": "本月完工数", "value": 0}]
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
 const errorMessage = ref('')
 const filters = ref<Record<string, string>>({})
 const filterFields = columns.slice(0, 3)
+
+// 统计卡片与清单取同一份行数据：待办口径与台账一致，往期单据状态是当时的判定，不重算
+const stats = computed(() => {
+  const month = new Date().toISOString().slice(0, 7)
+  return [
+    { label: '待开工检修', value: rows.value.filter((row) => row.status === '待开工').length },
+    { label: '检修中记录', value: rows.value.filter((row) => row.status === '检修中').length },
+    {
+      label: '本月完工数',
+      value: rows.value.filter(
+        (row) => row.status === '已完工' && String(row['完工日期'] ?? '').startsWith(month),
+      ).length,
+    },
+  ]
+})
+
 const statusSummary = computed(() =>
   statuses.map((status: string) => ({
     status,

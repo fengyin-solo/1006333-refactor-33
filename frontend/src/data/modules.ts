@@ -11,7 +11,9 @@ export const MODULES: ModuleMeta[] = [
     statuses: ["待投运", "运行中", "检修中", "已停用"],
     actions: ["提交投运", "安排检修", "停用管廊"],
     actionTargets: {"提交投运": "运行中", "安排检修": "检修中", "停用管廊": "已停用"},
+    actionFrom: {"提交投运": ["待投运"], "安排检修": ["运行中"], "停用管廊": ["检修中"]},
     metrics: ["运行中管廊", "检修中管廊", "待投运管廊"],
+    closedStatuses: ["已停用"],
   },
   {
     key: "pipeline",
@@ -22,7 +24,9 @@ export const MODULES: ModuleMeta[] = [
     statuses: ["待登记", "已入廊", "运行中", "已迁出"],
     actions: ["登记入廊", "确认运行", "办理迁出"],
     actionTargets: {"登记入廊": "已入廊", "确认运行": "运行中", "办理迁出": "已迁出"},
+    actionFrom: {"登记入廊": ["待登记"], "确认运行": ["已入廊"], "办理迁出": ["运行中"]},
     metrics: ["已入廊管线", "运行中管线", "待登记管线"],
+    closedStatuses: ["已迁出"],
   },
   {
     key: "envmonitor",
@@ -33,7 +37,9 @@ export const MODULES: ModuleMeta[] = [
     statuses: ["待采集", "已采集", "指标正常", "指标超标"],
     actions: ["提交采集", "判定正常", "标记超标"],
     actionTargets: {"提交采集": "已采集", "判定正常": "指标正常", "标记超标": "指标超标"},
+    actionFrom: {"提交采集": ["待采集"], "判定正常": ["已采集"], "标记超标": ["已采集"]},
     metrics: ["待采集点位", "指标正常点位", "指标超标点位"],
+    closedStatuses: ["指标正常"],
   },
   {
     key: "ventilation",
@@ -44,7 +50,9 @@ export const MODULES: ModuleMeta[] = [
     statuses: ["待开机", "运行中", "已停机", "故障停机"],
     actions: ["提交开机", "登记停机", "上报故障"],
     actionTargets: {"提交开机": "运行中", "登记停机": "已停机", "上报故障": "故障停机"},
+    actionFrom: {"提交开机": ["待开机"], "登记停机": ["运行中"], "上报故障": ["运行中"]},
     metrics: ["运行中风机", "已停机风机", "故障停机风机"],
+    closedStatuses: ["已停机"],
   },
   {
     key: "drainage",
@@ -55,7 +63,9 @@ export const MODULES: ModuleMeta[] = [
     statuses: ["待排水", "排水中", "水位正常", "水泵故障"],
     actions: ["启动排水", "确认正常", "上报故障"],
     actionTargets: {"启动排水": "排水中", "确认正常": "水位正常", "上报故障": "水泵故障"},
+    actionFrom: {"启动排水": ["待排水"], "确认正常": ["排水中"], "上报故障": ["排水中"]},
     metrics: ["待排水泵坑", "排水中泵坑", "水泵故障数"],
+    closedStatuses: ["水位正常"],
   },
   {
     key: "firecontrol",
@@ -66,7 +76,9 @@ export const MODULES: ModuleMeta[] = [
     statuses: ["待检测", "检测中", "状态正常", "需维修"],
     actions: ["提交检测", "判定正常", "提出维修"],
     actionTargets: {"提交检测": "检测中", "判定正常": "状态正常", "提出维修": "需维修"},
+    actionFrom: {"提交检测": ["待检测"], "判定正常": ["检测中"], "提出维修": ["检测中"]},
     metrics: ["待检测设施", "状态正常设施", "需维修设施"],
+    closedStatuses: ["状态正常"],
   },
   {
     key: "lighting",
@@ -77,7 +89,9 @@ export const MODULES: ModuleMeta[] = [
     statuses: ["待巡检", "巡检中", "照明正常", "已损坏"],
     actions: ["提交巡检", "判定正常", "登记损坏"],
     actionTargets: {"提交巡检": "巡检中", "判定正常": "照明正常", "登记损坏": "已损坏"},
+    actionFrom: {"提交巡检": ["待巡检"], "判定正常": ["巡检中"], "登记损坏": ["巡检中"]},
     metrics: ["待巡检灯具", "照明正常灯具", "已损坏灯具"],
+    closedStatuses: ["照明正常"],
   },
   {
     key: "access",
@@ -88,7 +102,9 @@ export const MODULES: ModuleMeta[] = [
     statuses: ["待检查", "检查中", "状态正常", "需整改"],
     actions: ["提交检查", "判定正常", "提出整改"],
     actionTargets: {"提交检查": "检查中", "判定正常": "状态正常", "提出整改": "需整改"},
+    actionFrom: {"提交检查": ["待检查"], "判定正常": ["检查中"], "提出整改": ["检查中"]},
     metrics: ["待检查点位", "状态正常点位", "需整改点位"],
+    closedStatuses: ["状态正常"],
   },
   {
     key: "patrol",
@@ -99,7 +115,9 @@ export const MODULES: ModuleMeta[] = [
     statuses: ["待巡检", "巡检中", "已完成", "已上报"],
     actions: ["开始巡检", "确认完成", "上报问题"],
     actionTargets: {"开始巡检": "巡检中", "确认完成": "已完成", "上报问题": "已上报"},
+    actionFrom: {"开始巡检": ["待巡检"], "确认完成": ["巡检中"], "上报问题": ["巡检中"]},
     metrics: ["待巡检任务", "巡检中任务", "本月发现问题数"],
+    closedStatuses: ["已完成", "已上报"],
   },
   {
     key: "settlement",
@@ -110,7 +128,9 @@ export const MODULES: ModuleMeta[] = [
     statuses: ["待监测", "监测中", "沉降正常", "超限预警"],
     actions: ["提交监测", "判定正常", "标记预警"],
     actionTargets: {"提交监测": "监测中", "判定正常": "沉降正常", "标记预警": "超限预警"},
+    actionFrom: {"提交监测": ["待监测"], "判定正常": ["监测中"], "标记预警": ["监测中"]},
     metrics: ["待监测断面", "沉降正常断面", "超限预警断面"],
+    closedStatuses: ["沉降正常"],
   },
   {
     key: "leak",
@@ -121,7 +141,9 @@ export const MODULES: ModuleMeta[] = [
     statuses: ["待处置", "处置中", "已完工", "需返工"],
     actions: ["派出处置", "确认完工", "要求返工"],
     actionTargets: {"派出处置": "处置中", "确认完工": "已完工", "要求返工": "需返工"},
+    actionFrom: {"派出处置": ["待处置"], "确认完工": ["处置中"], "要求返工": ["处置中"]},
     metrics: ["待处置渗漏点", "处置中渗漏点", "本月完工数"],
+    closedStatuses: ["已完工"],
   },
   {
     key: "maintenance",
@@ -132,7 +154,9 @@ export const MODULES: ModuleMeta[] = [
     statuses: ["待开工", "检修中", "已完工", "已延期"],
     actions: ["提交开工", "确认完工", "申请延期"],
     actionTargets: {"提交开工": "检修中", "确认完工": "已完工", "申请延期": "已延期"},
+    actionFrom: {"提交开工": ["待开工"], "确认完工": ["检修中"], "申请延期": ["检修中"]},
     metrics: ["待开工检修", "检修中记录", "本月完工数"],
+    closedStatuses: ["已完工"],
   },
   {
     key: "hazard",
@@ -143,7 +167,9 @@ export const MODULES: ModuleMeta[] = [
     statuses: ["待整改", "整改中", "已验收", "已逾期"],
     actions: ["派发整改", "提交验收", "标记逾期"],
     actionTargets: {"派发整改": "整改中", "提交验收": "已验收", "标记逾期": "已逾期"},
+    actionFrom: {"派发整改": ["待整改"], "提交验收": ["整改中"], "标记逾期": ["待整改", "整改中"]},
     metrics: ["待整改隐患", "整改中隐患", "已逾期隐患"],
+    closedStatuses: ["已验收"],
   },
   {
     key: "emergency",
@@ -154,7 +180,9 @@ export const MODULES: ModuleMeta[] = [
     statuses: ["待组织", "演练中", "已评估", "已取消"],
     actions: ["组织演练", "提交评估", "取消演练"],
     actionTargets: {"组织演练": "演练中", "提交评估": "已评估", "取消演练": "已取消"},
+    actionFrom: {"组织演练": ["待组织"], "提交评估": ["演练中"], "取消演练": ["待组织"]},
     metrics: ["待组织演练", "已评估演练", "本月演练次数"],
+    closedStatuses: ["已评估", "已取消"],
   },
   {
     key: "energy",
@@ -165,7 +193,9 @@ export const MODULES: ModuleMeta[] = [
     statuses: ["待抄表", "已抄表", "已核对", "数据异常"],
     actions: ["提交抄表", "确认核对", "标记异常"],
     actionTargets: {"提交抄表": "已抄表", "确认核对": "已核对", "标记异常": "数据异常"},
+    actionFrom: {"提交抄表": ["待抄表"], "确认核对": ["已抄表"], "标记异常": ["已抄表"]},
     metrics: ["待抄表点位", "已核对点位", "数据异常点位"],
+    closedStatuses: ["已核对"],
   },
   {
     key: "device",
@@ -176,7 +206,9 @@ export const MODULES: ModuleMeta[] = [
     statuses: ["待保养", "运行中", "已保养", "已报废"],
     actions: ["登记运行", "完成保养", "报废设备"],
     actionTargets: {"登记运行": "运行中", "完成保养": "已保养", "报废设备": "已报废"},
+    actionFrom: {"登记运行": ["待保养"], "完成保养": ["运行中"], "报废设备": ["运行中", "已保养"]},
     metrics: ["运行中设备", "待保养设备", "已报废设备"],
+    closedStatuses: ["已报废"],
   },
   {
     key: "entryapprove",
@@ -187,7 +219,9 @@ export const MODULES: ModuleMeta[] = [
     statuses: ["待审批", "已批准", "已驳回", "已完工"],
     actions: ["提交审批", "确认批准", "驳回申请"],
     actionTargets: {"提交审批": "已批准", "确认批准": "已驳回", "驳回申请": "已完工"},
+    actionFrom: {"提交审批": ["待审批"], "确认批准": ["已批准"], "驳回申请": ["已驳回"]},
     metrics: ["待审批申请", "已批准申请", "已驳回申请"],
+    closedStatuses: ["已驳回", "已完工"],
   },
   {
     key: "duty",
@@ -198,7 +232,9 @@ export const MODULES: ModuleMeta[] = [
     statuses: ["待交接", "交接中", "已交接", "有遗留"],
     actions: ["发起交接", "确认交接", "登记遗留"],
     actionTargets: {"发起交接": "交接中", "确认交接": "已交接", "登记遗留": "有遗留"},
+    actionFrom: {"发起交接": ["待交接"], "确认交接": ["交接中"], "登记遗留": ["交接中"]},
     metrics: ["待交接班次", "已交接班次", "有遗留事项"],
+    closedStatuses: ["已交接"],
   },
 ]
 

@@ -17,7 +17,11 @@ export type ModuleMeta = {
   statuses: string[]
   actions: string[]
   actionTargets: Record<string, string>
+  /** 每个动作允许从哪些环节发起：环节只能一段一段推进，跨段一律打回 */
+  actionFrom: Record<string, string[]>
   metrics: string[]
+  /** 收口状态：进入这些状态就不再计入待办；待办口径全仓库只有这一份 */
+  closedStatuses: string[]
 }
 
 export type PageResult = {
