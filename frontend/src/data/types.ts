@@ -36,3 +36,16 @@ export type OverviewResult = {
   cards: { label: string; value: number }[]
   modules: { name: string; created: number; pending: number; abnormal: number }[]
 }
+
+export type MigrationNote = {
+  /** 产生这条说明的业务模块 key */
+  module: string
+  /** 迁移做了什么、为什么这么做（撞车缘由、回填依据等） */
+  text: string
+}
+
+export type MigrationReport = {
+  version: number
+  ranAt: string
+  notes: MigrationNote[]
+}

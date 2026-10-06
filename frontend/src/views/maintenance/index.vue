@@ -67,6 +67,9 @@
       <span>共 {{ total }} 条设施检修管理记录</span>
       <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
     </footer>
+    <ul v-if="migrationNotes.length" class="migration-notes">
+      <li v-for="note in migrationNotes" :key="note">{{ note }}</li>
+    </ul>
   </section>
 </template>
 
@@ -76,6 +79,7 @@ import { computed, onMounted, ref } from 'vue'
 import {
   downloadEntries,
   listEntries,
+  migrationReport,
   moduleMeta,
   runAction as applyAction,
 } from '@/api/local-service'
@@ -92,6 +96,7 @@ const total = ref(0)
 const errorMessage = ref('')
 const filters = ref<Record<string, string>>({})
 const filterFields = columns.slice(0, 3)
+const migrationNotes = ref<string[]>([])
 const statusSummary = computed(() =>
   statuses.map((status: string) => ({
     status,
@@ -128,6 +133,10 @@ function reload() {
     const payload = listEntries(meta.key, filters.value)
     rows.value = payload.items
     total.value = payload.total
+    // 历史单据回填说明：往期保养记录沿用当时的判定，这里只展示补齐了哪些残缺取值。
+    migrationNotes.value = migrationReport()
+      .notes.filter((note) => note.module === meta.key)
+      .map((note) => note.text)
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '设施检修管理列表读取失败'
   }
